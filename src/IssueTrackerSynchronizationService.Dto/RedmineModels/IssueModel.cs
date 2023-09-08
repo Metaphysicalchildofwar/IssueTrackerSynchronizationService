@@ -6,7 +6,7 @@ namespace IssueTrackerSynchronizationService.Dto.RedmineModels;
 /// <summary>
 /// Модель задачи Redmine
 /// </summary>
-public class RedmineIssueModel
+public class IssueModel
 {
     /// <summary>
     /// Идентификатор

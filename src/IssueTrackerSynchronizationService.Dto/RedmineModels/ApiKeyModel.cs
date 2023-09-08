@@ -3,7 +3,7 @@
 /// <summary>
 /// Модель ключа API для Redmine
 /// </summary>
-public class RedmineApiKeyModel
+public class ApiKeyModel
 {
     /// <summary>
     /// Ключ

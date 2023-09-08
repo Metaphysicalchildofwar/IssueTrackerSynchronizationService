@@ -2,6 +2,7 @@
 using IssueTrackerSynchronizationService.Client.Interfaces;
 using IssueTrackerSynchronizationService.Client.Model;
 using IssueTrackerSynchronizationService.Dto.RedmineModels;
+using IssueTrackerSynchronizationService.Dto.RedmineModels.UpdatingModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -24,7 +25,7 @@ public class RedmineClient : BaseClient, IRedmineClient
     /// <summary>
     /// Ключ доступа к API
     /// </summary>
-    private readonly RedmineApiKeyModel ApiKey;
+    private readonly ApiKeyModel ApiKey;
 
     public RedmineClient(IConfiguration configuration, ILogger<RedmineClient> logger)
     {
@@ -40,12 +41,30 @@ public class RedmineClient : BaseClient, IRedmineClient
     /// Получить отслеживаемые задачи
     /// </summary>
     /// <returns>Список задач</returns>
-    public async Task<IEnumerable<RedmineIssueModel>> GetTrackedIssues()
+    public async Task<IEnumerable<IssueModel>> GetTrackedIssues()
     {
-        var issues = await ExecuteRequestAsync<RedmineApiKeyModel, RequestModel>(HttpMethod.Get, $"/issues.json?issue_id={IssuesIds}", ApiKey);
+        var issues = await ExecuteRequestAsync<ApiKeyModel, RequestModel>(HttpMethod.Get, $"/issues.json?issue_id={IssuesIds}", ApiKey);
 
         _logger.LogInformation(JsonConvert.SerializeObject(issues, Formatting.Indented));
 
         return issues?.Data?.Issues.Where(x => !x.Status.IsClosed);
+    }
+
+
+    /// <summary>
+    /// Изменить задачу
+    /// </summary>
+    /// <param name="issue">Задача</param>
+    /// <param name="assignedToId">Идентификатор, кому назначена</param>
+    /// <param name="statusId">Идентификатор статуса</param>
+    /// <returns>Результат изменения</returns>
+    public async Task<bool> ChangeIssue(IssueModel issue, int statusId, int assignedToId)
+    {
+        var resultUpdating = await ExecuteRequestAsync<UpdateIssueModel, RequestModel>(HttpMethod.Put, $"/issues/{issue.Id}.json",
+            new() { Issue = new() { StatusId = statusId, AssignedToId = assignedToId }, Key = ApiKey.Key });
+
+        _logger.LogInformation(JsonConvert.SerializeObject(resultUpdating, Formatting.Indented));
+
+        return !string.IsNullOrWhiteSpace(resultUpdating.Error);
     }
 }

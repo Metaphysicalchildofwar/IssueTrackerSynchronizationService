@@ -1,16 +1,19 @@
 ﻿using IssueTrackerSynchronizationService.Dto.RedmineModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IssueTrackerSynchronizationService.Client.Interfaces
 {
     /// <summary>
     /// Интерфейс для Redmine
     /// </summary>
-    public interface IRedmineClient: IClient<RedmineIssueModel>
+    public interface IRedmineClient: IClient<IssueModel>
     {
+        /// <summary>
+        /// Изменить задачу
+        /// </summary>
+        /// <param name="issue">Задача</param>
+        /// <param name="assignedToId">Идентификатор, кому назначена</param>
+        /// <param name="statusId">Идентификатор статуса</param>
+        /// <returns>Результат изменения</returns>
+        Task<bool> ChangeIssue(IssueModel issue, int statusId, int assignedToId);
     }
 }

@@ -21,7 +21,6 @@ public class Worker : BackgroundService
             try
             {
                 await Task.Delay(1000, stoppingToken);
-                await _redmineClient.GetTrackedIssues();
             }
             catch (Exception ex)
             {

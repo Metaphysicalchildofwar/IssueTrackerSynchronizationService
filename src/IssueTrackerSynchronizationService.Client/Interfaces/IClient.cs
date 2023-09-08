@@ -10,5 +10,5 @@ public interface IClient<TResult>
     /// Получить отслеживаемые задачи
     /// </summary>
     /// <returns>Список задач</returns>
-    public Task<IEnumerable<TResult>> GetTrackedIssues();
+    Task<IEnumerable<TResult>> GetTrackedIssues();
 }
