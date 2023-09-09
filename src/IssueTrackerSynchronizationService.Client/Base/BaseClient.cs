@@ -64,7 +64,6 @@ public abstract class BaseClient
             StatusCode = code
         };
 
-
     /// <summary>
     /// Конвертирует в модель (если есть данные) и возвращает результат запроса
     /// </summary>
@@ -90,7 +89,6 @@ public abstract class BaseClient
         return requestResult;
     }
 
-
     /// <summary>
     /// Возвращает новый экземпляр <see cref="HttpClient"/> без заголовков
     /// </summary>
@@ -103,5 +101,4 @@ public abstract class BaseClient
 
         return client;
     }
-
 }

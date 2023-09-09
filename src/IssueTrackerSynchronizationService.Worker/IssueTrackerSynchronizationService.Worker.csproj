@@ -16,5 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IssueTrackerSynchronizationService.Client\IssueTrackerSynchronizationService.Client.csproj" />
+    <ProjectReference Include="..\IssueTrackerSynchronizationService.Dal\IssueTrackerSynchronizationService.Dal.csproj" />
   </ItemGroup>
 </Project>

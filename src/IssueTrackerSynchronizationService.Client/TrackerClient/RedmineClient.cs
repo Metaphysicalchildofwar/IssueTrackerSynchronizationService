@@ -41,9 +41,11 @@ public class RedmineClient : BaseClient, IRedmineClient
     /// Получить отслеживаемые задачи
     /// </summary>
     /// <returns>Список задач</returns>
-    public async Task<IEnumerable<IssueModel>> GetTrackedIssues()
+    public async Task<IEnumerable<IssueModel>> GetTrackedIssuesAsync()
     {
-        var issues = await ExecuteRequestAsync<ApiKeyModel, RequestModel>(HttpMethod.Get, $"/issues.json?issue_id={IssuesIds}", ApiKey);
+        var issues = await ExecuteRequestAsync<ApiKeyModel, RequestModel>(HttpMethod.Get, $"/issues.json?cf_39=*", ApiKey);
+        
+        //var issues = await ExecuteRequestAsync<ApiKeyModel, RequestModel>(HttpMethod.Get, $"/issues.json?issue_id={IssuesIds}", ApiKey);
 
         _logger.LogInformation(JsonConvert.SerializeObject(issues, Formatting.Indented));
 
@@ -58,7 +60,7 @@ public class RedmineClient : BaseClient, IRedmineClient
     /// <param name="assignedToId">Идентификатор, кому назначена</param>
     /// <param name="statusId">Идентификатор статуса</param>
     /// <returns>Результат изменения</returns>
-    public async Task<bool> ChangeIssue(IssueModel issue, int statusId, int assignedToId)
+    public async Task<bool> ChangeIssueAsync(IssueModel issue, int statusId, int assignedToId)
     {
         var resultUpdating = await ExecuteRequestAsync<UpdateIssueModel, RequestModel>(HttpMethod.Put, $"/issues/{issue.Id}.json",
             new() { Issue = new() { StatusId = statusId, AssignedToId = assignedToId }, Key = ApiKey.Key });

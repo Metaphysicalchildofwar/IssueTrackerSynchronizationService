@@ -58,4 +58,11 @@ public class IssueModel
     /// Описание
     /// </summary>
     public string Description { get; set; }
+
+    /// <summary>
+    /// Кастомные поля
+    /// </summary>
+    [JsonProperty(PropertyName = "custom_fields")]
+    public List<ValueModel> CustomFields { get; set; } = new();
+
 }

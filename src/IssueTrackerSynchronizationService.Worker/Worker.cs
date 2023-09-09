@@ -1,17 +1,16 @@
-using IssueTrackerSynchronizationService.Client.Interfaces;
-using IssueTrackerSynchronizationService.Dto.RedmineModels;
+using IssueTrackerSynchronizationService.Dal.Interfaces;
 
 namespace IssueTrackerSynchronizationService.Api;
 
 public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
-    private readonly IRedmineClient _redmineClient;
+    private readonly IService _synchronizeService;
 
-    public Worker(ILogger<Worker> logger, IRedmineClient redmineClient)
+    public Worker(ILogger<Worker> logger, IService synchronizeService)
     {
         _logger = logger;
-        _redmineClient = redmineClient;
+        _synchronizeService = synchronizeService;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -21,6 +20,7 @@ public class Worker : BackgroundService
             try
             {
                 await Task.Delay(1000, stoppingToken);
+                await _synchronizeService.SynchronizeIssuesAsync();
             }
             catch (Exception ex)
             {
