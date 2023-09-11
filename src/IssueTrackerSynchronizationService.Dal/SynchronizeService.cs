@@ -27,13 +27,14 @@ public class SynchronizeService : IService
     /// </summary>
     public async Task SynchronizeIssuesAsync()
     {
+        var linkToExternalTrackerFieldId = 39;
+
         var redmineIssues = await _redmineClient.GetTrackedIssuesAsync();
 
         foreach (var issue in redmineIssues)
         {
-            var jiraIssueName = GetJiraIssueName(issue.CustomFields.FirstOrDefault(x => x.Name == "Ссылка на внеш.трекер").Value as string);
-
-            //var jiraIssueName = GetJiraIssueName(issue.Description);
+            var jiraIssueName = GetJiraIssueName(issue.CustomFields.FirstOrDefault(x => x.Id.Equals(linkToExternalTrackerFieldId)).Value as string);
+            //var jiraIssueName = GetJiraIssueName(issue.Description); //для теста
 
         }
     }

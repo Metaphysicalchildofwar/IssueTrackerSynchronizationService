@@ -44,8 +44,7 @@ public class RedmineClient : BaseClient, IRedmineClient
     public async Task<IEnumerable<IssueModel>> GetTrackedIssuesAsync()
     {
         var issues = await ExecuteRequestAsync<ApiKeyModel, RequestModel>(HttpMethod.Get, $"/issues.json?cf_39=*", ApiKey);
-        
-        //var issues = await ExecuteRequestAsync<ApiKeyModel, RequestModel>(HttpMethod.Get, $"/issues.json?issue_id={IssuesIds}", ApiKey);
+        //var issues = await ExecuteRequestAsync<ApiKeyModel, RequestModel>(HttpMethod.Get, $"/issues.json?issue_id={IssuesIds}", ApiKey); //для теста
 
         _logger.LogInformation(JsonConvert.SerializeObject(issues, Formatting.Indented));
 
