@@ -13,12 +13,14 @@ public class SynchronizeService : IService
 {
     private readonly ILogger<SynchronizeService> _logger;
     private readonly IRedmineClient _redmineClient;
+    private readonly IJiraClient _jiraClient;
     private readonly IConfiguration _configuration;
 
-    public SynchronizeService(ILogger<SynchronizeService> logger, IRedmineClient redmineClient, IConfiguration configuration)
+    public SynchronizeService(ILogger<SynchronizeService> logger, IRedmineClient redmineClient, IJiraClient jiraClient, IConfiguration configuration)
     {
         _logger = logger;
         _redmineClient = redmineClient;
+        _jiraClient = jiraClient;
         _configuration = configuration;
     }
 
@@ -33,19 +35,19 @@ public class SynchronizeService : IService
 
         foreach (var issue in redmineIssues)
         {
-            var jiraIssueName = GetJiraIssueName(issue.CustomFields.FirstOrDefault(x => x.Id.Equals(linkToExternalTrackerFieldId)).Value as string);
-            //var jiraIssueName = GetJiraIssueName(issue.Description); //для теста
+            var jiraIssueName = GetJiraIssueNumber(issue.CustomFields.FirstOrDefault(x => x.Id.Equals(linkToExternalTrackerFieldId)).Value as string);
 
+            var jiraIssue = await _jiraClient.GetTrackedIssueAsync(jiraIssueName);
+
+            // нужно как-то искать пользователя
         }
     }
 
     /// <summary>
-    /// Получить наименование задачи из Jira
+    /// Получить номер  задачи из Jira
     /// </summary>
     /// <param name="text">Ссылка на внеш. трекер</param>
-    /// <returns>Наименование задачи из Jira</returns>
-    private string GetJiraIssueName(string text)
-    {
-        return new Regex(_configuration.GetSection("Jira:RegularExpressionIssues").Value).Match(text).Value;
-    }
+    /// <returns>Номер задачи из Jira</returns>
+    private string GetJiraIssueNumber(string text)
+        => new Regex(_configuration.GetSection("Jira:RegularExpressionIssues").Value).Match(text).Value;
 }

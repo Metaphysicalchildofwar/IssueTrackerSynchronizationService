@@ -8,5 +8,5 @@ public class RequestModel
     /// <summary>
     /// Список задач
     /// </summary>
-    public List<IssueModel> Issues { get; set; } = new();
+    public List<RedmineIssueModel> Issues { get; set; } = new();
 }

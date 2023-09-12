@@ -5,8 +5,14 @@ namespace IssueTrackerSynchronizationService.Client.Interfaces;
 /// <summary>
 /// Интерфейс для Redmine
 /// </summary>
-public interface IRedmineClient: IClient<IssueModel>
+public interface IRedmineClient
 {
+    /// <summary>
+    /// Получить отслеживаемые задачи
+    /// </summary>
+    /// <returns>Список задач</returns>
+    Task<IEnumerable<RedmineIssueModel>> GetTrackedIssuesAsync();
+
     /// <summary>
     /// Изменить задачу
     /// </summary>
@@ -14,5 +20,5 @@ public interface IRedmineClient: IClient<IssueModel>
     /// <param name="assignedToId">Идентификатор, кому назначена</param>
     /// <param name="statusId">Идентификатор статуса</param>
     /// <returns>Результат изменения</returns>
-    Task<bool> ChangeIssueAsync(IssueModel issue, int statusId, int assignedToId);
+    Task<bool> ChangeIssueAsync(RedmineIssueModel issue, int statusId, int assignedToId);
 }

@@ -1,4 +1,4 @@
-﻿using IssueTrackerSynchronizationService.Dto.Base;
+using IssueTrackerSynchronizationService.Dto.Base;
 using Newtonsoft.Json;
 
 namespace IssueTrackerSynchronizationService.Dto.RedmineModels;
@@ -6,7 +6,7 @@ namespace IssueTrackerSynchronizationService.Dto.RedmineModels;
 /// <summary>
 /// Модель задачи Redmine
 /// </summary>
-public class IssueModel
+public class RedmineIssueModel
 {
     /// <summary>
     /// Идентификатор

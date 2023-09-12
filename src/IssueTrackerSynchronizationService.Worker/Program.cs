@@ -9,6 +9,7 @@ IHost host = Host.CreateDefaultBuilder(args)
     {
         services.AddHostedService<Worker>();
         services.AddSingleton<IRedmineClient, RedmineClient>();
+        services.AddSingleton<IJiraClient, JiraClient>();
         services.AddSingleton<IService, SynchronizeService>();
     })
     .Build();

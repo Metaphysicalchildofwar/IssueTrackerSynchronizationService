@@ -21,14 +21,15 @@ public abstract class BaseClient
     /// <param name="httpMethod">Метод запроса</param>
     /// <param name="relativeUri">Относительный URI, который идет к основному</param>
     /// <param name="request">Данные, которые надо передать</param>
+    /// <param name="authorizationString">Строка авторизации, если есть</param>
     /// <returns>Результат запроса данными типа <see cref="{TResult}"/></returns>
-    internal async Task<RequestResult<TResult>> ExecuteRequestAsync<TRequest, TResult>(HttpMethod httpMethod, string relativeUri, TRequest request = default)
+    internal async Task<RequestResult<TResult>> ExecuteRequestAsync<TRequest, TResult>(HttpMethod httpMethod, string relativeUri, TRequest request = default, string authorizationString = default)
     {
         try
         {
             using var client = CreateClient();
 
-            return await HandleJsonAsync<TResult>(await client.SendAsync(new()
+            var requestMessage = new HttpRequestMessage
             {
                 Method = httpMethod,
                 RequestUri = new Uri(BaseUri, relativeUri),
@@ -41,7 +42,12 @@ public abstract class BaseClient
                         },
                         Formatting = Formatting.Indented
                     }), Encoding.UTF8, "application/json")
-            }));
+            };
+
+            if (!string.IsNullOrWhiteSpace(authorizationString))
+                requestMessage.Headers.Add("Authorization", $"Basic {authorizationString}");
+
+            return await HandleJsonAsync<TResult>(await client.SendAsync(requestMessage));
         }
         catch (Exception ex)
         {

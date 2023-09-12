@@ -18,11 +18,6 @@ public class RedmineClient : BaseClient, IRedmineClient
     private readonly ILogger<RedmineClient> _logger;
 
     /// <summary>
-    /// Идентификаторы задач из Redmine
-    /// </summary>
-    private readonly string IssuesIds;
-
-    /// <summary>
     /// Ключ доступа к API
     /// </summary>
     private readonly ApiKeyModel ApiKey;
@@ -33,7 +28,6 @@ public class RedmineClient : BaseClient, IRedmineClient
         _logger = logger;
 
         BaseUri = new Uri(_configuration.GetSection("Redmine:BaseUri").Value);
-        IssuesIds = string.Join(",", _configuration.GetSection("Redmine:TaskNumbers").Get<string[]>());
         ApiKey = new() { Key = _configuration.GetSection("Redmine:ApiKey").Value };
     }
 
@@ -41,10 +35,10 @@ public class RedmineClient : BaseClient, IRedmineClient
     /// Получить отслеживаемые задачи
     /// </summary>
     /// <returns>Список задач</returns>
-    public async Task<IEnumerable<IssueModel>> GetTrackedIssuesAsync()
+    public async Task<IEnumerable<RedmineIssueModel>> GetTrackedIssuesAsync()
     {
         var issues = await ExecuteRequestAsync<ApiKeyModel, RequestModel>(HttpMethod.Get, $"/issues.json?cf_39=*", ApiKey);
-        //var issues = await ExecuteRequestAsync<ApiKeyModel, RequestModel>(HttpMethod.Get, $"/issues.json?issue_id={IssuesIds}", ApiKey); //для теста
+        //var issues = await ExecuteRequestAsync<ApiKeyModel, RequestModel>(HttpMethod.Get, $"/issues.json?issue_id={string.Join(",", _configuration.GetSection("Redmine:TaskNumbers").Get<string[]>())}", ApiKey); //для теста
 
         _logger.LogInformation(JsonConvert.SerializeObject(issues, Formatting.Indented));
 
@@ -59,7 +53,7 @@ public class RedmineClient : BaseClient, IRedmineClient
     /// <param name="assignedToId">Идентификатор, кому назначена</param>
     /// <param name="statusId">Идентификатор статуса</param>
     /// <returns>Результат изменения</returns>
-    public async Task<bool> ChangeIssueAsync(IssueModel issue, int statusId, int assignedToId)
+    public async Task<bool> ChangeIssueAsync(RedmineIssueModel issue, int statusId, int assignedToId)
     {
         var resultUpdating = await ExecuteRequestAsync<UpdateIssueModel, RequestModel>(HttpMethod.Put, $"/issues/{issue.Id}.json",
             new() { Issue = new() { StatusId = statusId, AssignedToId = assignedToId }, Key = ApiKey.Key });
