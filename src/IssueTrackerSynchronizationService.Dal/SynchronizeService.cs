@@ -32,15 +32,15 @@ public class SynchronizeService : IService
         var linkToExternalTrackerFieldId = 39;
 
         var redmineIssues = await _redmineClient.GetTrackedIssuesAsync();
-
-        foreach (var issue in redmineIssues)
+        
+        await Parallel.ForEachAsync(redmineIssues, async (item, cancellationToken) =>
         {
-            var jiraIssueName = GetJiraIssueNumber(issue.CustomFields.FirstOrDefault(x => x.Id.Equals(linkToExternalTrackerFieldId)).Value as string);
+            var jiraIssueName = GetJiraIssueNumber(item.CustomFields.FirstOrDefault(x => x.Id.Equals(linkToExternalTrackerFieldId)).Value as string);
 
             var jiraIssue = await _jiraClient.GetTrackedIssueAsync(jiraIssueName);
 
             // нужно как-то искать пользователя
-        }
+        });
     }
 
     /// <summary>
