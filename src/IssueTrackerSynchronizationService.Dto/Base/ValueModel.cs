@@ -5,5 +5,8 @@
 /// </summary>
 public class ValueModel : BaseModel
 {
+    /// <summary>
+    /// Поле
+    /// </summary>
     public object Value { get; set; }
 }

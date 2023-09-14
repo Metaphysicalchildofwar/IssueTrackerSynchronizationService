@@ -44,7 +44,7 @@ public class SynchronizeService : IService
     }
 
     /// <summary>
-    /// Получить номер  задачи из Jira
+    /// Получить номер задачи из Jira
     /// </summary>
     /// <param name="text">Ссылка на внеш. трекер</param>
     /// <returns>Номер задачи из Jira</returns>

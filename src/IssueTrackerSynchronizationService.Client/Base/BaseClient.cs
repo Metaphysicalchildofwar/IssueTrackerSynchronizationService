@@ -81,18 +81,14 @@ public abstract class BaseClient
         var strResult = await result.Content.ReadAsStringAsync();
 
         if (!result.IsSuccessStatusCode)
-        {
             return HandleException<TResult>(new Exception(strResult), result.StatusCode);
-        }
 
-        var requestResult = new RequestResult<TResult>
+        return new()
         {
             Data = string.IsNullOrWhiteSpace(strResult) ? default : JsonConvert.DeserializeObject<TResult>(strResult),
             Error = null,
             StatusCode = result.StatusCode
         };
-
-        return requestResult;
     }
 
     /// <summary>
