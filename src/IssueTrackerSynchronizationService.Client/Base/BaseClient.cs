@@ -1,4 +1,5 @@
 ﻿using IssueTrackerSynchronizationService.Client.Model;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Net;
@@ -12,11 +13,13 @@ namespace IssueTrackerSynchronizationService.Client.Base;
 public abstract class BaseClient
 {
     protected Uri BaseUri { get; set; }
+    private static ILogger<BaseClient> _logger;
 
     private readonly HttpClient client;
-    public BaseClient()
+    public BaseClient(ILogger<BaseClient> logger)
     {
         client = CreateClient();
+        _logger = logger;
     }
 
     /// <summary>
@@ -87,12 +90,16 @@ public abstract class BaseClient
         if (!result.IsSuccessStatusCode)
             return HandleException<TResult>(new Exception(strResult), result.StatusCode);
 
-        return new()
+        var res = new RequestResult<TResult>
         {
             Data = string.IsNullOrWhiteSpace(strResult) ? default : JsonConvert.DeserializeObject<TResult>(strResult),
             Error = null,
             StatusCode = result.StatusCode
         };
+        
+        _logger.LogInformation(JsonConvert.SerializeObject(res, Formatting.Indented));
+
+        return res;
     }
 
     /// <summary>

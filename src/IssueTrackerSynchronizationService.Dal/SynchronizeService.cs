@@ -56,6 +56,5 @@ public class SynchronizeService : IService
     /// </summary>
     /// <param name="text">Ссылка на внеш. трекер</param>
     /// <returns>Номер задачи из Jira</returns>
-    private string GetJiraIssueNumber(string text)
-        => new Regex(_configuration.GetSection("Jira:RegularExpressionIssues").Value).Match(text).Value;
+    private string GetJiraIssueNumber(string text) => new Regex(_configuration.GetSection("Jira:RegularExpressionIssues").Value).Match(text).Value;
 }

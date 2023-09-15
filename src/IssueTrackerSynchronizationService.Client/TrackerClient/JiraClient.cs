@@ -14,14 +14,12 @@ namespace IssueTrackerSynchronizationService.Client.TrackerClient;
 public class JiraClient : BaseClient, IJiraClient
 {
     private readonly IConfiguration _configuration;
-    private readonly ILogger<RedmineClient> _logger;
 
     private readonly string AuthorizationString;
 
-    public JiraClient(IConfiguration configuration, ILogger<RedmineClient> logger)
+    public JiraClient(IConfiguration configuration, ILogger<BaseClient> logger) : base(logger)
     {
         _configuration = configuration;
-        _logger = logger;
 
         BaseUri = new Uri(_configuration.GetSection("Jira:BaseUri").Value);
         AuthorizationString = Convert.ToBase64String(
@@ -34,11 +32,5 @@ public class JiraClient : BaseClient, IJiraClient
     /// <param name="issueNumber">Номер задачи</param>
     /// <returns>Задача</returns>
     public async Task<object> GetTrackedIssueAsync(string issueNumber)
-    {
-        var issue = await ExecuteRequestAsync<object, JiraIssueModel>(HttpMethod.Get, $"/rest/api/latest/issue/{issueNumber}", authorizationString: AuthorizationString);
-
-        _logger.LogInformation(JsonConvert.SerializeObject(issue, Formatting.Indented));
-
-        return issue;
-    }
+        => await ExecuteRequestAsync<object, JiraIssueModel>(HttpMethod.Get, $"/rest/api/latest/issue/{issueNumber}", authorizationString: AuthorizationString);
 }

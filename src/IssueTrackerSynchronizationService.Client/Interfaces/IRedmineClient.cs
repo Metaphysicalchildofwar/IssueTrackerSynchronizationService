@@ -19,6 +19,5 @@ public interface IRedmineClient
     /// <param name="issue">Задача</param>
     /// <param name="assignedToId">Идентификатор, кому назначена</param>
     /// <param name="statusId">Идентификатор статуса</param>
-    /// <returns>Результат изменения</returns>
-    Task<bool> ChangeIssueAsync(RedmineIssueModel issue, int statusId, int assignedToId);
+    Task ChangeIssueAsync(RedmineIssueModel issue, int statusId, int assignedToId);
 }
