@@ -14,8 +14,8 @@ public abstract class BaseClient
     protected Uri BaseUri { get; set; }
 
     private readonly HttpClient client;
-    public BaseClient() 
-    { 
+    public BaseClient()
+    {
         client = CreateClient();
     }
 

@@ -15,6 +15,7 @@ public class SynchronizeService : IService
     private readonly IRedmineClient _redmineClient;
     private readonly IJiraClient _jiraClient;
     private readonly IConfiguration _configuration;
+    private readonly string ExternalTrackerId;
 
     public SynchronizeService(ILogger<SynchronizeService> logger, IRedmineClient redmineClient, IJiraClient jiraClient, IConfiguration configuration)
     {
@@ -22,6 +23,7 @@ public class SynchronizeService : IService
         _redmineClient = redmineClient;
         _jiraClient = jiraClient;
         _configuration = configuration;
+        ExternalTrackerId = _configuration.GetSection("Redmine:RedmineItemsIds:ExternalTrackerId").Value;
     }
 
     /// <summary>
@@ -29,19 +31,24 @@ public class SynchronizeService : IService
     /// </summary>
     public async Task SynchronizeIssuesAsync()
     {
-        var linkToExternalTrackerFieldId = 39;
-
-        var redmineIssues = await _redmineClient.GetTrackedIssuesAsync();
-
-        await Parallel.ForEachAsync(redmineIssues, async (item, cancellationToken) =>
+        try
         {
-            var jiraIssueName = GetJiraIssueNumber(item.CustomFields.FirstOrDefault(x => x.Id.Equals(linkToExternalTrackerFieldId)).Value as string);
+            var redmineIssues = await _redmineClient.GetTrackedIssuesAsync();
 
-            var jiraIssue = await _jiraClient.GetTrackedIssueAsync(jiraIssueName);
+            await Parallel.ForEachAsync(redmineIssues, async (item, cancellationToken) =>
+            {
+                var jiraIssueName = GetJiraIssueNumber(item.CustomFields.FirstOrDefault(x => x.Id.Equals(ExternalTrackerId)).Value as string);
 
-            //сопоставить статусы, узнать, на какой статус менять в редмайне и переводить на тестеров или обратно на разраба (если надо)
-            // нужно как-то искать пользователя
-        });
+                var jiraIssue = await _jiraClient.GetTrackedIssueAsync(jiraIssueName);
+
+                //сопоставить статусы, узнать, на какой статус менять в редмайне и переводить на тестеров или обратно на разраба (если надо)
+                // нужно как-то искать пользователя
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.StackTrace);
+        }
     }
 
     /// <summary>

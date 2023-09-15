@@ -16,6 +16,8 @@ public class RedmineClient : BaseClient, IRedmineClient
 {
     private readonly IConfiguration _configuration;
     private readonly ILogger<RedmineClient> _logger;
+    private readonly string ExternalTrackerId;
+    private readonly string ProjectMisId;
 
     /// <summary>
     /// Ключ доступа к API
@@ -29,6 +31,8 @@ public class RedmineClient : BaseClient, IRedmineClient
 
         BaseUri = new Uri(_configuration.GetSection("Redmine:BaseUri").Value);
         ApiKey = new() { Key = _configuration.GetSection("Redmine:ApiKey").Value };
+        ExternalTrackerId = _configuration.GetSection("Redmine:RedmineItemsIds:ExternalTrackerId").Value;
+        ProjectMisId = _configuration.GetSection("Redmine:RedmineItemsIds:ProjectMisId").Value;
     }
 
     /// <summary>
@@ -76,11 +80,8 @@ public class RedmineClient : BaseClient, IRedmineClient
     /// <returns>Количество всех задач по фильтру (нужно для первого получения и проверки, нужно ли получать еще задачи)</returns>
     private async Task<int> GetIssues(int limit, List<RedmineIssueModel> issues)
     {
-        var projectMisId = 115;
-        var linkToExternalTrackerFieldId = 39;
-
         var issuesRes = await ExecuteRequestAsync<ApiKeyModel, RequestModel>(HttpMethod.Get,
-            $"/issues.json?cf_{linkToExternalTrackerFieldId}=*&project_id={projectMisId}&status_id=open&offset={issues.Count}&limit={limit}", ApiKey);
+            $"/issues.json?cf_{ExternalTrackerId}=*&project_id={ProjectMisId}&status_id=open&offset={issues.Count}&limit={limit}", ApiKey);
 
         _logger.LogInformation(JsonConvert.SerializeObject(issuesRes, Formatting.Indented));
 
