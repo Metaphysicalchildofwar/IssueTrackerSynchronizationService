@@ -1,4 +1,6 @@
-﻿namespace IssueTrackerSynchronizationService.Dto.RedmineModels;
+﻿using Newtonsoft.Json;
+
+namespace IssueTrackerSynchronizationService.Dto.RedmineModels;
 
 /// <summary>
 /// Модель получения задач для отслеживания
@@ -9,4 +11,10 @@ public class RequestModel
     /// Список задач
     /// </summary>
     public List<RedmineIssueModel> Issues { get; set; } = new();
+
+    /// <summary>
+    /// Количество записей.
+    /// </summary>
+    [JsonProperty(PropertyName = "total_count")]
+    public int TotalCount { get; set; }
 }

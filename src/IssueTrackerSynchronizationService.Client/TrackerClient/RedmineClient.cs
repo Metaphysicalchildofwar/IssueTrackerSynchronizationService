@@ -37,12 +37,17 @@ public class RedmineClient : BaseClient, IRedmineClient
     /// <returns>Список задач</returns>
     public async Task<IEnumerable<RedmineIssueModel>> GetTrackedIssuesAsync()
     {
-        var issues = await ExecuteRequestAsync<ApiKeyModel, RequestModel>(HttpMethod.Get, $"/issues.json?cf_39=*", ApiKey);
-        //var issues = await ExecuteRequestAsync<ApiKeyModel, RequestModel>(HttpMethod.Get, $"/issues.json?issue_id={string.Join(",", _configuration.GetSection("Redmine:TaskNumbers").Get<string[]>())}", ApiKey); //для теста
+        var limit = 100;
+        var issues = new List<RedmineIssueModel>();
 
-        _logger.LogInformation(JsonConvert.SerializeObject(issues, Formatting.Indented));
+        var totalCount = await GetIssues(limit, issues);
 
-        return issues?.Data?.Issues.Where(x => !x.Status.IsClosed);
+        while (totalCount > issues.Count)
+        {
+            await GetIssues(limit, issues);
+        }
+
+        return issues;
     }
 
 
@@ -61,5 +66,26 @@ public class RedmineClient : BaseClient, IRedmineClient
         _logger.LogInformation(JsonConvert.SerializeObject(resultUpdating, Formatting.Indented));
 
         return !string.IsNullOrWhiteSpace(resultUpdating.Error);
+    }
+
+    /// <summary>
+    /// Получить задачи
+    /// </summary>
+    /// <param name="limit">Количество задач</param>
+    /// <param name="issues">Список полученных задач</param>
+    /// <returns>Количество всех задач по фильтру (нужно для первого получения и проверки, нужно ли получать еще задачи)</returns>
+    private async Task<int> GetIssues(int limit, List<RedmineIssueModel> issues)
+    {
+        var projectMisId = 115;
+        var linkToExternalTrackerFieldId = 39;
+
+        var issuesRes = await ExecuteRequestAsync<ApiKeyModel, RequestModel>(HttpMethod.Get,
+            $"/issues.json?cf_{linkToExternalTrackerFieldId}=*&project_id={projectMisId}&status_id=open&offset={issues.Count}&limit={limit}", ApiKey);
+
+        _logger.LogInformation(JsonConvert.SerializeObject(issuesRes, Formatting.Indented));
+
+        issues.AddRange(issuesRes?.Data?.Issues);
+
+        return issuesRes.Data.TotalCount;
     }
 }

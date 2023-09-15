@@ -13,6 +13,12 @@ public abstract class BaseClient
 {
     protected Uri BaseUri { get; set; }
 
+    private readonly HttpClient client;
+    public BaseClient() 
+    { 
+        client = CreateClient();
+    }
+
     /// <summary>
     /// Выполняет запрос.
     /// </summary>
@@ -27,8 +33,6 @@ public abstract class BaseClient
     {
         try
         {
-            using var client = CreateClient();
-
             var requestMessage = new HttpRequestMessage
             {
                 Method = httpMethod,

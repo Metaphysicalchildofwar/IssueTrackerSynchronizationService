@@ -32,13 +32,14 @@ public class SynchronizeService : IService
         var linkToExternalTrackerFieldId = 39;
 
         var redmineIssues = await _redmineClient.GetTrackedIssuesAsync();
-        
+
         await Parallel.ForEachAsync(redmineIssues, async (item, cancellationToken) =>
         {
             var jiraIssueName = GetJiraIssueNumber(item.CustomFields.FirstOrDefault(x => x.Id.Equals(linkToExternalTrackerFieldId)).Value as string);
 
             var jiraIssue = await _jiraClient.GetTrackedIssueAsync(jiraIssueName);
 
+            //сопоставить статусы, узнать, на какой статус менять в редмайне и переводить на тестеров или обратно на разраба (если надо)
             // нужно как-то искать пользователя
         });
     }
