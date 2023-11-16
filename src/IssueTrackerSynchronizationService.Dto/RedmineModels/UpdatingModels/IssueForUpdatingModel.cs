@@ -12,10 +12,4 @@ public class IssueForUpdatingModel
     /// </summary>
     [JsonProperty(PropertyName = "status_id")]
     public int StatusId { get; set; }
-
-    /// <summary>
-    /// Идентификатор, кому назначена
-    /// </summary>
-    [JsonProperty(PropertyName = "assigned_to_id")]
-    public int AssignedToId { get; set; }
 }

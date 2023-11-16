@@ -69,13 +69,17 @@ public abstract class BaseClient
     /// <param name="ex">Исключение.</param>
     /// <param name="code">Код ошибки.</param>
     /// <returns>Результат запроса с исключением.</returns>
-    private static RequestResult<TResult> HandleException<TResult>(Exception ex, HttpStatusCode code) =>
-        new()
+    private static RequestResult<TResult> HandleException<TResult>(Exception ex, HttpStatusCode code)
+    {
+        _logger.LogError(ex.Message);
+
+        return new()
         {
             Data = default,
             Error = ex.Message,
             StatusCode = code
         };
+    }
 
     /// <summary>
     /// Конвертирует в модель (если есть данные) и возвращает результат запроса

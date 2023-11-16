@@ -1,5 +1,6 @@
 ﻿using IssueTrackerSynchronizationService.Client.Interfaces;
 using IssueTrackerSynchronizationService.Dal.Interfaces;
+using IssueTrackerSynchronizationService.Dto.Enums;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
@@ -15,7 +16,23 @@ public class SynchronizeService : IService
     private readonly IRedmineClient _redmineClient;
     private readonly IJiraClient _jiraClient;
     private readonly IConfiguration _configuration;
+
+    /// <summary>
+    /// Внешний идентификатор поля "Ссылка на внеш. трекер"
+    /// </summary>
     private readonly string ExternalTrackerId;
+
+    /// <summary>
+    /// Список синхронизации статусов Jira и Redmine
+    /// </summary>
+    private readonly Dictionary<JiraStatuses, RedmineIssueStatuses> _statusMappingList = new()
+    {
+        [JiraStatuses.InWork] = RedmineIssueStatuses.InWork,
+        [JiraStatuses.Rediscovered] = RedmineIssueStatuses.Debugging,
+        [JiraStatuses.Solved] = RedmineIssueStatuses.Testing,
+        //[JiraStatuses.Closed] = RedmineIssueStatuses.Closed,
+        [JiraStatuses.InReview] = RedmineIssueStatuses.CodeReview
+    };
 
     public SynchronizeService(ILogger<SynchronizeService> logger, IRedmineClient redmineClient, IJiraClient jiraClient, IConfiguration configuration)
     {
@@ -37,17 +54,24 @@ public class SynchronizeService : IService
 
             await Parallel.ForEachAsync(redmineIssues, async (item, cancellationToken) =>
             {
-                var jiraIssueName = GetJiraIssueNumber(item.CustomFields.FirstOrDefault(x => x.Id.Equals(ExternalTrackerId)).Value as string);
+                try
+                {
+                    var jiraIssueName = GetJiraIssueNumber(item.CustomFields.FirstOrDefault(x => x.Id.Equals(ExternalTrackerId)).Value as string);
 
-                var jiraIssue = await _jiraClient.GetTrackedIssueAsync(jiraIssueName);
+                    var jiraIssue = await _jiraClient.GetTrackedIssueAsync(jiraIssueName);
 
-                //сопоставить статусы, узнать, на какой статус менять в редмайне и переводить на тестеров или обратно на разраба (если надо)
-                // нужно как-то искать пользователя
+                    if (jiraIssue != null)
+                        await _redmineClient.ChangeIssueAsync(item, (int)_statusMappingList.FirstOrDefault(x => x.Key.Equals(jiraIssue.Fields.Status.Status)).Value);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                }
             });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.StackTrace);
+            _logger.LogError(ex.Message);
         }
     }
 

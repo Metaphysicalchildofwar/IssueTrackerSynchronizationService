@@ -3,7 +3,6 @@ using IssueTrackerSynchronizationService.Client.Interfaces;
 using IssueTrackerSynchronizationService.Dto.JiraModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System.Text;
 
 namespace IssueTrackerSynchronizationService.Client.TrackerClient;
@@ -31,6 +30,6 @@ public class JiraClient : BaseClient, IJiraClient
     /// </summary>
     /// <param name="issueNumber">Номер задачи</param>
     /// <returns>Задача</returns>
-    public async Task<object> GetTrackedIssueAsync(string issueNumber)
-        => await ExecuteRequestAsync<object, JiraIssueModel>(HttpMethod.Get, $"/rest/api/latest/issue/{issueNumber}", authorizationString: AuthorizationString);
+    public async Task<JiraIssueModel> GetTrackedIssueAsync(string issueNumber)
+        => (await ExecuteRequestAsync<object, JiraIssueModel>(HttpMethod.Get, $"/rest/api/latest/issue/{issueNumber}", authorizationString: AuthorizationString))?.Data;
 }

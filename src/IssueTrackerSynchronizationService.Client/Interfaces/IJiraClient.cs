@@ -1,3 +1,5 @@
+using IssueTrackerSynchronizationService.Dto.JiraModels;
+
 namespace IssueTrackerSynchronizationService.Client.Interfaces;
 
 /// <summary>
@@ -10,5 +12,5 @@ public interface IJiraClient
     /// </summary>
     /// <param name="issueNumber">Номер задачи</param>
     /// <returns>Задача</returns>
-    Task<object> GetTrackedIssueAsync(string issueNumber);
+    Task<JiraIssueModel> GetTrackedIssueAsync(string issueNumber);
 }

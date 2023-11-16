@@ -51,16 +51,14 @@ public class RedmineClient : BaseClient, IRedmineClient
         return issues;
     }
 
-
     /// <summary>
     /// Изменить задачу
     /// </summary>
     /// <param name="issue">Задача</param>
-    /// <param name="assignedToId">Идентификатор, кому назначена</param>
     /// <param name="statusId">Идентификатор статуса</param>
-    public async Task ChangeIssueAsync(RedmineIssueModel issue, int statusId, int assignedToId)
+    public async Task ChangeIssueAsync(RedmineIssueModel issue, int statusId)
         => await ExecuteRequestAsync<UpdateIssueModel, RequestModel>(HttpMethod.Put, $"/issues/{issue.Id}.json", 
-            new() { Issue = new() { StatusId = statusId, AssignedToId = assignedToId }, Key = ApiKey.Key });
+            new() { Issue = new() { StatusId = statusId }, Key = ApiKey.Key });
 
     /// <summary>
     /// Получить задачи
