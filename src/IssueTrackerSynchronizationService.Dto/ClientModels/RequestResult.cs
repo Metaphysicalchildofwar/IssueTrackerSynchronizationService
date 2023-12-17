@@ -1,4 +1,4 @@
-﻿namespace IssueTrackerSynchronizationService.Client.Model;
+﻿namespace IssueTrackerSynchronizationService.Dto.ClientModels;
 
 /// <summary>
 /// Результат запроса с данными.

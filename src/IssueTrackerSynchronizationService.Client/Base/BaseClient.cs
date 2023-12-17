@@ -1,4 +1,4 @@
-﻿using IssueTrackerSynchronizationService.Client.Model;
+﻿using IssueTrackerSynchronizationService.Dto.ClientModels;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -14,8 +14,8 @@ public abstract class BaseClient
 {
     protected Uri BaseUri { get; set; }
     private static ILogger<BaseClient> _logger;
-
     private readonly HttpClient client;
+
     public BaseClient(ILogger<BaseClient> logger)
     {
         client = CreateClient();

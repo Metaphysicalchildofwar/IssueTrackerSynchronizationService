@@ -56,12 +56,15 @@ public class SynchronizeService : IService
             {
                 try
                 {
-                    var jiraIssueName = GetJiraIssueNumber(item.CustomFields.FirstOrDefault(x => x.Id.Equals(ExternalTrackerId)).Value as string);
+                    var jiraIssueNumber = GetJiraIssueNumber(item.CustomFields.FirstOrDefault(x => x.Id.Equals(ExternalTrackerId)).Value as string);
 
-                    var jiraIssue = await _jiraClient.GetTrackedIssueAsync(jiraIssueName);
+                    if (!string.IsNullOrWhiteSpace(jiraIssueNumber))
+                    {
+                        var jiraIssue = await _jiraClient.GetTrackedIssueAsync(jiraIssueNumber);
 
-                    if (jiraIssue != null)
-                        await _redmineClient.ChangeIssueAsync(item, (int)_statusMappingList.FirstOrDefault(x => x.Key.Equals(jiraIssue.Fields.Status.Status)).Value);
+                        if (jiraIssue != null)
+                            await _redmineClient.ChangeIssueAsync(item, (int)_statusMappingList.FirstOrDefault(x => x.Key.Equals(jiraIssue.Fields.Status.Status)).Value);
+                    }
                 }
                 catch (Exception ex)
                 {

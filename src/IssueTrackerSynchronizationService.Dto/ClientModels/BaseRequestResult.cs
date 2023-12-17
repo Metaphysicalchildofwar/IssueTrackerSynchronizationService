@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace IssueTrackerSynchronizationService.Client.Model;
+namespace IssueTrackerSynchronizationService.Dto.ClientModels;
 
 /// <summary>
 /// Базовый результат запроса.
